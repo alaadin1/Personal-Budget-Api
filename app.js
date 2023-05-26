@@ -2,8 +2,12 @@ const express = require('express')
 const app = express()
 const apiRouter = express.Router()
 const {envelopes} = require('./envelopes')
+const bodyParser = require('body-parser')
+const { env } = require('process')
 
+app.use(bodyParser.json())
 app.use('/api/envelopes', apiRouter)
+
 
 
 //get all the envelopes
@@ -29,7 +33,7 @@ apiRouter.get('/totalBudget', (req,res)=>{
 })
 
 //add an enevelope 
-apiRouter.post('/:category/:budgetAmount', (req,res)=>{
+apiRouter.post('/', (req,res)=>{
     //create a new ID for the envelope
     //We first need to determine what IDs we have
     //Then we take the last ID number and add one. this will be the new ID.
@@ -39,12 +43,15 @@ apiRouter.post('/:category/:budgetAmount', (req,res)=>{
     })
     let newId = allIds[allIds.length-1] + 1 
 
+    console.log(req.body)
     //get the category and budget specfied by the person (can be req.body if using front end)
-    const {category, budgetAmount} = req.params
+    const {category, budgetAmount} = req.body
 
     //check to see if a category and budget was inputted
     if(!category || !budgetAmount){
-        return res.send('Please input appropriate information : Category & Budget amount')
+        return res
+            .status(404)
+            .json({success:false, msg:'Please input appropriate information : Category & Budget amount'})
     }
     
     //check to see if the category already exisits 
@@ -122,12 +129,26 @@ apiRouter.put('/:amountTaken', (req,res)=>{
 })
 
 apiRouter.delete('/:id', (req,res)=>{
-    
+    const {id} = req.params
+
+    const envelopeToDelete = envelopes.find((envelope)=>{
+        return envelope.id === Number(id)
+    })
+
+    if(!envelopeToDelete){
+        return res
+            .send("NOT THERE")
+    }
+
+    const newEnvelopes = envelopes.filter((envelope) => envelope.id !== Number(id))
+    return res.status(200).json({success:true, data:newEnvelopes})
+
+
 })
 
 
 
-const PORT = 5001
+const PORT = 5002
 app.listen(PORT,()=>{
     console.log(`Listening on ${PORT}`)
 })
