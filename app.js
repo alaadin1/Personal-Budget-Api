@@ -11,6 +11,23 @@ apiRouter.get('/', (req,res) =>{
     res.status(200).send(envelopes)
 })
 
+//get total budget
+apiRouter.get('/totalBudget', (req,res)=>{
+    //first we have to iterate through all of the objs in the arr
+    //then we have to have a running count of the budgetAmount variable
+    // const totalBudeget = envelopes.reduce((total,currentVal)=>{
+    //     console.log(total.budgetAmount)
+    //     console.log(currentVal.budgetAmount)
+    //     return total.budgetAmount + currentVal.budgetAmount
+    // })
+    // console.log(totalBudeget)
+    let total = 0
+    for(let i = 0; i<envelopes.length; i++){
+        total += envelopes[i].budgetAmount
+    }
+    res.status(200).send(total.toString())
+})
+
 //add an enevelope 
 apiRouter.post('/:category/:budgetAmount', (req,res)=>{
     //create a new ID for the envelope
@@ -71,7 +88,6 @@ apiRouter.get('/:id', (req,res)=>{
 
 })
 
-
 //update a specfic envelope when money is being taken out
 apiRouter.put('/:amountTaken', (req,res)=>{
     //find the specific envelope to update (use the id)
@@ -93,7 +109,7 @@ apiRouter.put('/:amountTaken', (req,res)=>{
     envelopes[enevelopeIndex].budgetAmount -= Number(amountTaken)
     
 
-
+    //let users know if they went over budget
     if(envelopes[enevelopeIndex].budgetAmount < 0){
         const absValue = Math.abs(envelopes[enevelopeIndex].budgetAmount)
         return res.status(201).send(`You've gone over your limit by ${absValue} Dollars!`)
@@ -103,6 +119,10 @@ apiRouter.put('/:amountTaken', (req,res)=>{
     //console.log(envelopeId)
     // console.log(enevelopeIndex)
     res.send(envelopes[enevelopeIndex])
+})
+
+apiRouter.delete('/:id', (req,res)=>{
+    
 })
 
 
