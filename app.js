@@ -128,18 +128,27 @@ apiRouter.put('/:amountTaken', (req,res)=>{
     res.send(envelopes[enevelopeIndex])
 })
 
+//delete a specfic envelope based on id
 apiRouter.delete('/:id', (req,res)=>{
+
+    //first get the id from the paramter obj
     const {id} = req.params
 
+    /*loop through the envelopes arr and find the envelope obj
+     with the id we are looking for */
     const envelopeToDelete = envelopes.find((envelope)=>{
         return envelope.id === Number(id)
     })
 
+    //if the envelope we are trying to delete doesnt exist, send a message 
     if(!envelopeToDelete){
         return res
             .send("NOT THERE")
     }
 
+    //now we need to filter the array to take out the envelop obj
+    //we will use .filter and the criteria will fitler out the obj that has
+    //the id we wanted deleted
     const newEnvelopes = envelopes.filter((envelope) => envelope.id !== Number(id))
     return res.status(200).json({success:true, data:newEnvelopes})
 
