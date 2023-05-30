@@ -155,6 +155,45 @@ apiRouter.delete('/:id', (req,res)=>{
 
 })
 
+//were going to change budgets between envelopes
+apiRouter.post('/transfer/:from/:to', (req,res) =>{
+    //we know we want to transfer money from one envelope to another
+    //the params will tell us this
+    const {from, to} = req.params
+
+    //match up the category with the from and to name
+    const fromEnvelope = envelopes.find((envelope)=> envelope.category === from)
+
+    const toEnvelope = envelopes.find((envelope)=> envelope.category === to)
+
+
+    //now we need to get the amount from each of the envelopes
+    const fromEnvelopeAmount = fromEnvelope.budgetAmount
+    const toEnvelopeAmount = toEnvelope.budgetAmount
+
+
+    //now we need to get the amount we want to take out from each
+    const {amountToTransfer} = req.body
+    
+    //now subtract the amount to transfer from the fromEnv and add it to the toEnv
+    envelopes.forEach(envelope => {
+        if(envelope.category === from){
+            envelope.budgetAmount -= Number(amountToTransfer)
+        }
+
+        if(envelope.category === to){
+            envelope.budgetAmount += Number(amountToTransfer)
+        }
+
+    console.log(envelopes)
+    });
+    
+
+
+    res.status(200).send('ok')
+
+})
+
 
 
 const PORT = 5002
